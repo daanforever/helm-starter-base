@@ -146,6 +146,7 @@ ingress:
       X-Real-IP: $remote_addr
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
+  port: 8080
   hosts:
     - host: dev.internal
       paths:

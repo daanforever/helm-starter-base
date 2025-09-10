@@ -88,7 +88,7 @@ spec:
           {{- end }}
 
           {{- if .Values.env }}
-          env: {{- include "common.tplvalues.render" (dict "value" .Values.resources "context" $) | nindent 12 }}
+          env: {{- include "common.tplvalues.render" (dict "value" .Values.env "context" $) | nindent 12 }}
           {{- end }}
 
       {{- with .Values.extraVolumes }}
