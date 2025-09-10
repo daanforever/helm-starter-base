@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "common.names.fullname" . }}
+  name: {{ include "common.names.name" . }}
   labels:
     {{- include "common.labels.standard" ( dict "customLabels" .Values.commonLabels "context" $ ) | nindent 4 }}
 spec:
@@ -37,7 +37,7 @@ spec:
       securityContext:
         fsGroup: 1000
       containers:
-        - name: {{ .Chart.Name }}
+        - name: {{ include "common.names.name" . }}
 
           {{- if $.Values.diagnosticMode.enabled }}
           command: {{- include "common.tplvalues.render" (dict "value" $.Values.diagnosticMode.command "context" $) | nindent 12 }}

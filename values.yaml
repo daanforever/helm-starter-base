@@ -33,13 +33,11 @@ env: []
 # env:
 #   - name: NAME
 #     value: "VALUE"
-
-# This is to override the envFrom for the container.
-envFrom: []
-# Example:
-# envFrom:
-#   - secretRef:
-#       name: SECRET_NAME
+#   - name: NAME
+#     valueFrom:
+#       secretKeyRef:
+#         name: SECRET_NAME
+#         key: SECRET_KEY
 #   - configMapRef:
 #       name: CONFIG_MAP_NAME
 
