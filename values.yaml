@@ -1,0 +1,240 @@
+# Default values for app.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# This will set the replicaset count more information can be found here: https://kubernetes.io/docs/concepts/workloads/controllers/replicaset/
+replicaCount: 1
+
+# This sets the container image more information can be found here: https://kubernetes.io/docs/concepts/containers/images/
+image:
+  repository: busybox
+  # This sets the pull policy for images.
+  # Possible values are: Always, Never, IfNotPresent
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: ""
+
+# This is for the secrets for pulling an image from a private repository more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+imagePullSecrets: []
+
+# This is to override the chart name.
+nameOverride: ""
+fullnameOverride: ""
+
+# This is to override the command for the container.
+command: []
+
+# This is to override the args for the container.
+args: []
+
+# This is to override the env for the container.
+env: []
+# Example:
+# env:
+#   - name: NAME
+#     value: "VALUE"
+
+# This is to override the envFrom for the container.
+envFrom: []
+# Example:
+# envFrom:
+#   - secretRef:
+#       name: SECRET_NAME
+#   - configMapRef:
+#       name: CONFIG_MAP_NAME
+
+# Additional volumes on the output Deployment definition.
+extraVolumes:
+  - name: deploy-volume
+    hostPath:
+      path: /path/to/external/directory
+      type: DirectoryOrCreate
+  # - name: redis-password
+  #   secret:
+  #     secretName: redis
+  #     defaultMode: 420
+  #     items:
+  #     - key: my-key
+  #       path: my-path
+  # - name: pvc
+  #   persistentVolumeClaim:
+  #     claimName: pvc-name
+
+
+# Additional volumeMounts on the output Deployment definition.
+extraVolumeMounts:
+  - name: deploy-volume
+    mountPath: /path/to/container/directory
+  # - name: redis-password
+  #   mountPath: /secrets
+  #   subPath: my-key
+  # - name: pvc
+  #   mountPath: /path/to/container/directory
+  #   subPath: some-sub-path
+
+secret:
+  - name: password
+    value: password
+
+
+# This is to override the ports for the container
+container:
+  ports:
+    - name: http
+      containerPort: 8080
+      protocol: TCP
+
+# This is to override the ports for the service.
+service:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080
+      protocol: TCP
+
+# This is for setting up a service more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/
+extraService: {}
+
+# This is to override the strategy for the deployment.
+# Possible values are: Recreate, RollingUpdate
+strategy:
+  type: 'Recreate'
+
+# This is for setting Kubernetes Annotations to a Pod.
+# For more information checkout: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
+podAnnotations: {}
+# This is for setting Kubernetes Labels to a Pod.
+# For more information checkout: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
+podLabels: {}
+
+# This is to override the security context for the pod.
+podSecurityContext: {}
+  # fsGroup: 2000
+
+# This is to override the security context for the container.
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+# This section builds out the service account more information can be found here: https://kubernetes.io/docs/concepts/security/service-accounts/
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: false
+  # Automatically mount a ServiceAccount's API credentials?
+  automount: false
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+# This block is for setting up the ingress for more information can be found here: https://kubernetes.io/docs/concepts/services-networking/ingress/
+ingress:
+  enabled: false
+  className: "nginx"
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/proxy-set-headers: |
+      X-Forwarded-Proto: $scheme
+      X-Forwarded-Ssl: on
+      X-Forwarded-For: $proxy_add_x_forwarded_for
+      X-Real-IP: $remote_addr
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: dev.internal
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+resources:
+  requests:
+    cpu: 0.5
+    memory: 512Mi
+  limits:
+    cpu: 1
+    memory: 1Gi
+
+resourcesPreset: "none"
+
+# This is to setup the liveness and readiness probes more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
+startupProbeEnabled: false
+startupProbe:
+  httpGet:
+    path: /
+    port: 8080
+  timeoutSeconds: 1
+  initialDelaySeconds: 5
+  periodSeconds: 1
+  failureThreshold: 60
+
+readinessProbeEnabled: false
+readinessProbe:
+  httpGet:
+    path: /
+    port: 8080
+  timeoutSeconds: 30
+  initialDelaySeconds: 1
+  periodSeconds: 60
+  failureThreshold: 3
+
+livenessProbeEnabled: false
+livenessProbe:
+  httpGet:
+    path: /
+    port: 8080
+  timeoutSeconds: 10
+  initialDelaySeconds: 1
+  periodSeconds: 20
+  failureThreshold: 3
+
+# This is to setup the persistence for the deployment.
+# More information can be found here: https://kubernetes.io/docs/concepts/storage/persistent-volumes/
+# Creates a PersistentVolume and PersistentVolumeClaim if enabled.
+persistence:
+  enabled: false
+  existingClaim: ""
+  size: 10Mi
+  accessModes:
+    - ReadWriteOnce
+  resourcePolicy: ""
+  annotations: {}
+  storageClass: ""
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+# This section is for setting up autoscaling more information can be found here: https://kubernetes.io/docs/concepts/workloads/autoscaling/
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+## Enable diagnostic mode in the deployment
+##
+diagnosticMode:
+  ## @param diagnosticMode.enabled Enable diagnostic mode (all probes will be disabled and the command will be overridden)
+  ##
+  enabled: false
+  ## @param diagnosticMode.command Command to override all containers in the deployment
+  ##
+  command:
+    - sleep
+  ## @param diagnosticMode.args Args to override all containers in the deployment
+  ##
+  args:
+    - infinity
