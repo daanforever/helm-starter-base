@@ -41,6 +41,12 @@ env: []
 #   - configMapRef:
 #       name: CONFIG_MAP_NAME
 
+envFrom: []
+#   - secretRef:
+#       name: secret-name
+#   - configMapRef:
+#       name: config-map-name
+
 # Additional volumes on the output Deployment definition.
 extraVolumes:
   - name: deploy-volume
